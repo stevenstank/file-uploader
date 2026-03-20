@@ -2,7 +2,6 @@ require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
-const fs = require("fs");
 const session = require("express-session");
 const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
 const prisma = require("./lib/prisma");
@@ -14,11 +13,6 @@ const fileRoutes = require("./routes/files");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const uploadsPath = path.join(__dirname, "uploads");
-
-if (!fs.existsSync(uploadsPath)) {
-  fs.mkdirSync(uploadsPath, { recursive: true });
-}
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -41,7 +35,6 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 app.use(express.static(path.join(__dirname, "public")));
-app.use("/uploads", express.static(uploadsPath));
 
 app.use((req, res, next) => {
   res.locals.currentUser = req.user || null;

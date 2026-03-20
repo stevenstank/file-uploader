@@ -1,4 +1,3 @@
-const path = require("path");
 const prisma = require("../lib/prisma");
 
 const getOwnedFile = (fileId, userId) => {
@@ -32,10 +31,7 @@ exports.downloadFileById = async (req, res) => {
       return res.redirect("/folders?error=File+not+found");
     }
 
-    const storedFilename = path.basename(file.url);
-    const absolutePath = path.join(process.cwd(), "uploads", storedFilename);
-
-    return res.download(absolutePath, file.name);
+    return res.redirect(file.url);
   } catch (error) {
     return res.redirect("/folders?error=Unable+to+download+file");
   }

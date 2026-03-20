@@ -89,7 +89,7 @@ exports.postUpload = async (req, res) => {
       data: {
         name: req.file.originalname,
         size: req.file.size,
-        url: `/uploads/${req.file.filename}`,
+        url: req.file.path,
         folderId,
         userId: req.user.id,
       },
