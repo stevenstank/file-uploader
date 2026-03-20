@@ -33,7 +33,6 @@ exports.createShareLink = async (req, res) => {
   const shareLink = await prisma.shareLink.create({
     data: {
       id: uuidv4(),
-      fileId: null,
       folderId: folder.id,
       expiresAt,
     },
@@ -71,7 +70,6 @@ exports.createFileShareLink = async (req, res) => {
     data: {
       id: uuidv4(),
       fileId: file.id,
-      folderId: null,
       expiresAt,
     },
   });
