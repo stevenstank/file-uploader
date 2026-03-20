@@ -1,120 +1,344 @@
-<h1>Dashboard</h1>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --panel: #1a1a1a;
+    --panel-soft: #222222;
+    --text: #f4f4f4;
+    --muted: #b8b8b8;
+    --accent: #ffd60a;
+    --danger: #ff7676;
+    --success: #9bf6a8;
+    --border: #303030;
+  }
 
-<p>Hey <%= user.name %></p>
+  * {
+    box-sizing: border-box;
+  }
 
-<% if (uploadError) { %>
-  <p style="color: #b91c1c; background: #fee2e2; padding: 8px 10px; border-radius: 6px;"><%= uploadError %></p>
-<% } %>
-<% if (uploadSuccess) { %>
-  <p style="color: #065f46; background: #d1fae5; padding: 8px 10px; border-radius: 6px;"><%= uploadSuccess %></p>
-<% } %>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    line-height: 1.5;
+  }
 
-<nav>
-  <% if (currentUser) { %>
-    <a href="/dashboard">Dashboard</a>
-    <a href="#upload">Upload</a>
-    <a href="/logout">Logout</a>
-  <% } else { %>
-    <a href="/login">Login</a>
-    <a href="/register">Signup</a>
-  <% } %>
-</nav>
+  a {
+    color: var(--text);
+    text-decoration: none;
+  }
 
-<h2>Create Folder</h2>
-<form action="/folders" method="POST">
-  <input type="text" name="name" placeholder="Folder name" required />
-  <button type="submit">Create Folder</button>
-</form>
+  a:hover {
+    color: var(--accent);
+  }
 
-<h2>Your Folders</h2>
-<% if (!folders.length) { %>
-  <p>No folders yet.</p>
-<% } %>
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 16px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 100vh;
+  }
 
-<% if (shareError) { %>
-  <p><%= shareError %></p>
-<% } %>
-<% if (shareSuccess) { %>
-  <p><%= shareSuccess %></p>
-<% } %>
-<% if (shareLink) { %>
-  <p>Share link:</p>
-  <p><a href="<%= shareLink %>" target="_blank" rel="noopener noreferrer"><%= shareLink %></a></p>
-<% } %>
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
 
-<ul>
-  <% folders.forEach((folder) => { %>
-    <li style="margin-bottom: 12px;">
-      <strong><%= folder.name %></strong>
-      <form action="/share-folder/<%= folder.id %>" method="POST" style="display:inline; margin-left: 8px;">
-        <input type="number" name="days" min="1" max="365" value="1" required style="width: 70px;" />
-        <button type="submit">Share Folder</button>
-      </form>
-      <form action="/folders/<%= folder.id %>/delete" method="POST" style="display:inline; margin-left: 8px;" onsubmit="return confirm('Are you sure you want to delete this folder?');">
-        <button type="submit">Delete Folder</button>
-      </form>
-    </li>
-  <% }) %>
-</ul>
+  .top-nav {
+    display: flex;
+    gap: 14px;
+    margin-top: 8px;
+  }
 
-<h2 id="upload">Upload File</h2>
-<form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data">
-  <input id="file-input" type="file" name="file" required />
+  h1, h2 {
+    margin: 0 0 10px;
+  }
 
-  <select id="folder-select" name="folderId">
-    <option value="">No Folder</option>
-    <% folders.forEach(folder => { %>
-      <option value="<%= folder.id %>"><%= folder.name %></option>
-    <% }) %>
-  </select>
+  p {
+    margin: 0 0 10px;
+    color: var(--muted);
+  }
 
-  <button id="upload-button" type="submit" disabled>Upload</button>
+  .message {
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
+  }
 
-</form>
+  .message.error {
+    color: #ffd7d7;
+    background: #2a1717;
+    border-color: #4a2323;
+  }
 
-<div
-  id="drop-zone"
-  style="margin-top: 12px; padding: 24px; border: 2px dashed #888; border-radius: 8px; text-align: center;"
->
-  Drag and drop a file here to preview before upload
-</div>
-<div id="file-preview" style="display:none; margin-top: 10px; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px; max-width: 420px;">
-  <p style="margin: 0 0 6px;"><strong>Selected File:</strong> <span id="preview-name"></span></p>
-  <p style="margin: 0;"><strong>Size:</strong> <span id="preview-size"></span></p>
-</div>
-<div style="margin-top: 10px; width: 100%; max-width: 420px; background: #e5e7eb; border-radius: 999px; overflow: hidden; height: 12px;">
-  <div id="upload-progress-bar" style="width: 0%; height: 100%; background: #2d89ef; transition: width 0.15s ease;"></div>
-</div>
-<p id="upload-progress-text">0%</p>
-<p id="upload-status"></p>
-<p>Drop or choose a file, preview it, optionally select a folder, then click Upload.</p>
+  .message.success {
+    color: #dcffe2;
+    background: #16291a;
+    border-color: #26412b;
+  }
 
-<h2>Your Files</h2>
-<% if (!files.length) { %>
-  <p>No files uploaded yet.</p>
-<% } %>
+  form {
+    margin: 0;
+  }
 
-<ul>
-  <% files.forEach((file) => { %>
-    <li>
-      <strong><%= file.name %></strong> (<%= file.size %> bytes)
-      <% if (file.folder) { %>
-        - Folder: <%= file.folder.name %>
-      <% } %>
-      <% if (file.url) { %>
-        <a href="/files/download/<%= file.id %>">Download</a>
+  input,
+  select,
+  button {
+    background: var(--panel-soft);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font: inherit;
+  }
+
+  input:focus,
+  select:focus,
+  button:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  button {
+    cursor: pointer;
+    border-color: #7f6a03;
+  }
+
+  button:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .inline-form {
+    display: inline;
+    margin-left: 8px;
+  }
+
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .upload-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  #drop-zone {
+    margin-top: 8px;
+    padding: 20px;
+    border: 2px dashed #5f5f5f;
+    border-radius: 8px;
+    text-align: center;
+    color: var(--muted);
+    background: #151515;
+  }
+
+  #file-preview {
+    display: none;
+    margin-top: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    max-width: 480px;
+    background: #151515;
+  }
+
+  .progress-track {
+    margin-top: 10px;
+    width: 100%;
+    max-width: 480px;
+    background: #0d0d0d;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    height: 12px;
+  }
+
+  #upload-progress-bar {
+    width: 0%;
+    height: 100%;
+    background: var(--accent);
+  }
+
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .list-item {
+    background: #151515;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .meta {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .footer {
+    margin-top: auto;
+    padding-top: 20px;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .footer a {
+    color: var(--accent);
+  }
+</style>
+
+<main class="page">
+  <section class="card">
+    <h1>Dashboard</h1>
+    <p>Hey <%= user.name %></p>
+
+    <% if (uploadError) { %>
+      <p class="message error"><%= uploadError %></p>
+    <% } %>
+    <% if (uploadSuccess) { %>
+      <p class="message success"><%= uploadSuccess %></p>
+    <% } %>
+
+    <nav class="top-nav">
+      <% if (currentUser) { %>
+        <a href="/dashboard">Dashboard</a>
+        <a href="#upload">Upload</a>
+        <a href="/logout">Logout</a>
       <% } else { %>
-        <span>URL missing</span>
+        <a href="/login">Login</a>
+        <a href="/register">Signup</a>
       <% } %>
-      <form action="/share-file/<%= file.id %>" method="POST" style="display:inline;">
-        <input type="number" name="days" min="1" max="365" value="1" required style="width: 70px;" />
-        <button type="submit">Share File</button>
-      </form>
-      <form action="/files/<%= file.id %>/delete" method="POST" style="display:inline;">
-        <button type="submit">Delete</button>
-      </form>
-    </li>
-  <% }) %>
-</ul>
+    </nav>
+  </section>
+
+  <section class="card stack">
+    <h2>Create Folder</h2>
+    <form action="/folders" method="POST" class="upload-form">
+      <input type="text" name="name" placeholder="Folder name" required />
+      <button type="submit">Create Folder</button>
+    </form>
+  </section>
+
+  <section class="card stack">
+    <h2>Your Folders</h2>
+
+    <% if (shareError) { %>
+      <p class="message error"><%= shareError %></p>
+    <% } %>
+    <% if (shareSuccess) { %>
+      <p class="message success"><%= shareSuccess %></p>
+    <% } %>
+    <% if (shareLink) { %>
+      <p>Share link:</p>
+      <p><a href="<%= shareLink %>" target="_blank" rel="noopener noreferrer"><%= shareLink %></a></p>
+    <% } %>
+
+    <% if (!folders.length) { %>
+      <p>No folders yet.</p>
+    <% } else { %>
+      <ul class="list">
+        <% folders.forEach((folder) => { %>
+          <li class="list-item">
+            <strong><%= folder.name %></strong>
+            <form action="/share-folder/<%= folder.id %>" method="POST" class="inline-form">
+              <input type="number" name="days" min="1" max="365" value="1" required style="width: 70px;" />
+              <button type="submit">Share Folder</button>
+            </form>
+            <form action="/folders/<%= folder.id %>/delete" method="POST" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this folder?');">
+              <button type="submit">Delete Folder</button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
+
+  <section class="card stack" id="upload">
+    <h2>Upload File</h2>
+    <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data" class="upload-form">
+      <input id="file-input" type="file" name="file" required />
+
+      <select id="folder-select" name="folderId">
+        <option value="">No Folder</option>
+        <% folders.forEach(folder => { %>
+          <option value="<%= folder.id %>"><%= folder.name %></option>
+        <% }) %>
+      </select>
+
+      <button id="upload-button" type="submit" disabled>Upload</button>
+    </form>
+
+    <div id="drop-zone">Drag and drop a file here to preview before upload</div>
+    <div id="file-preview">
+      <p><strong>Selected File:</strong> <span id="preview-name"></span></p>
+      <p><strong>Size:</strong> <span id="preview-size"></span></p>
+    </div>
+
+    <div class="progress-track">
+      <div id="upload-progress-bar"></div>
+    </div>
+    <p id="upload-progress-text">0%</p>
+    <p id="upload-status"></p>
+    <p>Drop or choose a file, preview it, optionally select a folder, then click Upload.</p>
+  </section>
+
+  <section class="card stack">
+    <h2>Your Files</h2>
+
+    <% if (!files.length) { %>
+      <p>No files uploaded yet.</p>
+    <% } else { %>
+      <ul class="list">
+        <% files.forEach((file) => { %>
+          <li class="list-item">
+            <strong><%= file.name %></strong>
+            <span class="meta">(<%= file.size %> bytes)</span>
+            <% if (file.folder) { %>
+              <span class="meta">- Folder: <%= file.folder.name %></span>
+            <% } %>
+            <% if (file.url) { %>
+              <a href="/files/download/<%= file.id %>" class="inline-form">Download</a>
+            <% } else { %>
+              <span class="meta">URL missing</span>
+            <% } %>
+            <form action="/share-file/<%= file.id %>" method="POST" class="inline-form">
+              <input type="number" name="days" min="1" max="365" value="1" required style="width: 70px;" />
+              <button type="submit">Share File</button>
+            </form>
+            <form action="/files/<%= file.id %>/delete" method="POST" class="inline-form">
+              <button type="submit">Delete</button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
+
+  <footer class="footer">
+    made with ❤️ by <a href="https://github.com/stevenstank" target="_blank" rel="noopener noreferrer">stevenstank</a>
+  </footer>
+</main>
 
 <script src="/js/dashboard-upload.js"></script>
