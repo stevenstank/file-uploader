@@ -8,22 +8,38 @@
   </head>
   <body>
     <main class="container">
+      <section class="card center">
+        <h1>File Uploader</h1>
+        <p>
+          Upload your files, keep them organized in folders, and access them anytime from anywhere.
+          You can view or download your files easily and even share them with others.
+        </p>
+
+        <div class="button-row">
+          <a class="btn-link" href="/login">Login</a>
+          <a class="btn-link" href="/register">Signup</a>
+        </div>
+      </section>
+
       <section class="card">
-        <h1><%= message %></h1>
+        <h2>How it works</h2>
+        <ul class="list">
+          <li>Upload files from your device</li>
+          <li>Optionally organize them into folders</li>
+          <li>View or download anytime</li>
+          <li>Share files with a link</li>
+        </ul>
+
         <% if (currentUser) { %>
-          <p>Logged in as <%= currentUser.email %></p>
+          <p class="muted">You are logged in as <%= currentUser.email %>.</p>
           <nav class="top-nav">
-            <a href="/dashboard">Dashboard</a>
-            <a href="/dashboard#upload">Upload</a>
+            <a href="/dashboard">Go to dashboard</a>
             <a href="/logout">Logout</a>
-          </nav>
-        <% } else { %>
-          <nav class="top-nav">
-            <a href="/login">Login</a>
-            <a href="/register">Signup</a>
           </nav>
         <% } %>
       </section>
+
+      <%- include("partials/footer") %>
     </main>
   </body>
 </html>

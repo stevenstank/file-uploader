@@ -26,6 +26,10 @@
     padding: 20px;
   }
 
+  .center {
+    text-align: center;
+  }
+
   .card {
     background: var(--card);
     padding: 15px;
@@ -123,6 +127,30 @@
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+  }
+
+  .button-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .btn-link {
+    display: inline-block;
+    background: #1a1a1a;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-decoration: none;
+  }
+
+  .btn-link:hover {
+    background: var(--accent);
+    color: #000000;
+    text-decoration: none;
   }
 
   .message {
