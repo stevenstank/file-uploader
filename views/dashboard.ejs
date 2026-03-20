@@ -19,6 +19,34 @@
   <button type="submit">Create Folder</button>
 </form>
 
+<h2>Your Folders</h2>
+<% if (!folders.length) { %>
+  <p>No folders yet.</p>
+<% } %>
+
+<% if (shareError) { %>
+  <p><%= shareError %></p>
+<% } %>
+<% if (shareSuccess) { %>
+  <p><%= shareSuccess %></p>
+<% } %>
+<% if (shareLink) { %>
+  <p>Share link:</p>
+  <p><a href="<%= shareLink %>" target="_blank" rel="noopener noreferrer"><%= shareLink %></a></p>
+<% } %>
+
+<ul>
+  <% folders.forEach((folder) => { %>
+    <li style="margin-bottom: 12px;">
+      <strong><%= folder.name %></strong>
+      <form action="/share-folder/<%= folder.id %>" method="POST" style="display:inline; margin-left: 8px;">
+        <input type="number" name="days" min="1" max="365" value="1" required style="width: 70px;" />
+        <button type="submit">Share Folder</button>
+      </form>
+    </li>
+  <% }) %>
+</ul>
+
 <h2 id="upload">Upload File</h2>
 <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data">
   <input id="file-input" type="file" name="file" required />

@@ -59,7 +59,16 @@ exports.getFolderById = async (req, res) => {
       return res.redirect("/folders?error=Folder+not+found");
     }
 
-    return res.render("folder-details", { folder });
+    const shareLink = req.query.shareLink || null;
+    const shareSuccess = req.query.shareSuccess || null;
+    const shareError = req.query.shareError || null;
+
+    return res.render("folder-details", {
+      folder,
+      shareLink,
+      shareSuccess,
+      shareError,
+    });
   } catch (err) {
     return res.redirect("/folders?error=Unable+to+load+folder");
   }

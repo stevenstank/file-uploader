@@ -27,6 +27,7 @@ model Folder {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   files     File[]
+  shareLinks ShareLink[]
   createdAt DateTime @default(now())
 }
 
@@ -47,4 +48,12 @@ model Session {
   sid       String   @unique
   data      String
   expiresAt DateTime
+}
+
+model ShareLink {
+  id        String   @id @default(uuid())
+  folderId  String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  folder    Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
 }

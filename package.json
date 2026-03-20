@@ -35,7 +35,8 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "pg": "^8.20.0",
-    "prisma": "^7.5.0"
+    "prisma": "^7.5.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

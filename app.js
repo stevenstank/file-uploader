@@ -11,6 +11,7 @@ const authRoutes = require("./routes/auth");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const folderRoutes = require("./routes/folders");
 const fileRoutes = require("./routes/files");
+const shareRoutes = require("./routes/share");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -53,6 +54,7 @@ app.use("/", authRoutes);
 app.use("/", dashboardRoutes);
 app.use("/", folderRoutes);
 app.use("/", fileRoutes);
+app.use("/", shareRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
