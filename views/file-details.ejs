@@ -13,7 +13,11 @@
     <p><strong>Uploaded:</strong> <%= file.createdAt.toISOString() %></p>
 
     <p>
-      <a href="/files/<%= file.id %>/download">Download</a>
+      <% if (file.url) { %>
+        <a href="/files/download/<%= file.id %>">Download</a>
+      <% } else { %>
+        <span>URL missing</span>
+      <% } %>
     </p>
 
     <p><a href="/folders">Back to folders</a></p>

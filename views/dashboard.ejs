@@ -87,8 +87,11 @@
       <% if (file.folder) { %>
         - Folder: <%= file.folder.name %>
       <% } %>
-      <a href="/files/<%= file.id %>">View</a>
-      <a href="/files/<%= file.id %>/download">Download</a>
+      <% if (file.url) { %>
+        <a href="/files/download/<%= file.id %>">Download</a>
+      <% } else { %>
+        <span>URL missing</span>
+      <% } %>
       <form action="/share-file/<%= file.id %>" method="POST" style="display:inline;">
         <input type="number" name="days" min="1" max="365" value="1" required style="width: 70px;" />
         <button type="submit">Share File</button>
