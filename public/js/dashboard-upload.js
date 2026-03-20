@@ -12,6 +12,12 @@ if (dropZone && uploadForm && fileInput && folderSelect && uploadStatus && progr
     uploadStatus.style.color = isError ? "#c0392b" : "#2c3e50";
   };
 
+  const formatBytes = (bytes) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
   const setProgress = (percent) => {
     const safePercent = Math.max(0, Math.min(100, percent));
     progressBar.style.width = `${safePercent}%`;
@@ -34,6 +40,8 @@ if (dropZone && uploadForm && fileInput && folderSelect && uploadStatus && progr
     setStatus("Uploading...");
     setProgress(0);
 
+    console.log(`[upload] starting upload: ${file.name}, ${formatBytes(file.size)}`);
+
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/upload", true);
     xhr.setRequestHeader("Accept", "application/json");
@@ -43,6 +51,11 @@ if (dropZone && uploadForm && fileInput && folderSelect && uploadStatus && progr
       if (event.lengthComputable) {
         const percent = Math.round((event.loaded / event.total) * 100);
         setProgress(percent);
+        console.log(
+          `[upload] progress ${percent}% (${formatBytes(event.loaded)} / ${formatBytes(event.total)})`
+        );
+      } else {
+        console.log("[upload] progress event received but total size is not computable");
       }
     };
 
@@ -58,14 +71,17 @@ if (dropZone && uploadForm && fileInput && folderSelect && uploadStatus && progr
       if (xhr.status >= 200 && xhr.status < 300 && result.ok) {
         setProgress(100);
         setStatus("Upload successful. Refreshing...");
+        console.log("[upload] completed successfully");
         window.location.reload();
         return;
       }
 
+      console.error("[upload] failed", { status: xhr.status, result });
       setStatus(result.error || "Upload failed", true);
     };
 
     xhr.onerror = () => {
+      console.error("[upload] network error");
       setStatus("Network error while uploading", true);
     };
 
