@@ -115,7 +115,7 @@ exports.uploadFile = async (req, res) => {
       return res.json({ ok: true });
     }
 
-    return res.redirect("/dashboard");
+    return res.redirect("/dashboard?success=File+uploaded+successfully");
   } catch (error) {
     console.error(error);
 

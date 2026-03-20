@@ -66,6 +66,8 @@ exports.dashboard = async (req, res) => {
   const shareLink = req.query.shareLink || null;
   const shareSuccess = req.query.shareSuccess || null;
   const shareError = req.query.shareError || null;
+  const uploadSuccess = req.query.success || null;
+  const uploadError = req.query.error || null;
 
   const folders = await prisma.folder.findMany({
     where: {
@@ -91,6 +93,8 @@ exports.dashboard = async (req, res) => {
     shareLink,
     shareSuccess,
     shareError,
+    uploadSuccess,
+    uploadError,
   });
 };
 

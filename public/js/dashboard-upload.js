@@ -2,11 +2,29 @@ const dropZone = document.getElementById("drop-zone");
 const uploadForm = document.getElementById("upload-form");
 const fileInput = document.getElementById("file-input");
 const folderSelect = document.getElementById("folder-select");
+const uploadButton = document.getElementById("upload-button");
 const uploadStatus = document.getElementById("upload-status");
 const progressBar = document.getElementById("upload-progress-bar");
 const progressText = document.getElementById("upload-progress-text");
+const previewBox = document.getElementById("file-preview");
+const previewName = document.getElementById("preview-name");
+const previewSize = document.getElementById("preview-size");
 
-if (dropZone && uploadForm && fileInput && folderSelect && uploadStatus && progressBar && progressText) {
+if (
+  dropZone &&
+  uploadForm &&
+  fileInput &&
+  folderSelect &&
+  uploadButton &&
+  uploadStatus &&
+  progressBar &&
+  progressText &&
+  previewBox &&
+  previewName &&
+  previewSize
+) {
+  let selectedFile = null;
+
   const setStatus = (message, isError = false) => {
     uploadStatus.textContent = message;
     uploadStatus.style.color = isError ? "#c0392b" : "#2c3e50";
@@ -22,6 +40,23 @@ if (dropZone && uploadForm && fileInput && folderSelect && uploadStatus && progr
     const safePercent = Math.max(0, Math.min(100, percent));
     progressBar.style.width = `${safePercent}%`;
     progressText.textContent = `${safePercent}%`;
+  };
+
+  const setSelectedFile = (file) => {
+    selectedFile = file || null;
+
+    if (!selectedFile) {
+      previewBox.style.display = "none";
+      previewName.textContent = "";
+      previewSize.textContent = "";
+      uploadButton.disabled = true;
+      return;
+    }
+
+    previewBox.style.display = "block";
+    previewName.textContent = selectedFile.name;
+    previewSize.textContent = formatBytes(selectedFile.size);
+    uploadButton.disabled = false;
   };
 
   const uploadWithXhr = (file) => {
@@ -70,8 +105,9 @@ if (dropZone && uploadForm && fileInput && folderSelect && uploadStatus && progr
 
       if (xhr.status >= 200 && xhr.status < 300 && result.ok) {
         setProgress(100);
-        setStatus("Upload successful. Refreshing...");
+        setStatus("File uploaded successfully");
         console.log("[upload] completed successfully");
+        setSelectedFile(null);
         window.location.reload();
         return;
       }
@@ -90,12 +126,17 @@ if (dropZone && uploadForm && fileInput && folderSelect && uploadStatus && progr
 
   uploadForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const selectedFile = fileInput.files?.[0];
     if (!selectedFile) {
       setStatus("Please choose a file first", true);
       return;
     }
     uploadWithXhr(selectedFile);
+  });
+
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files?.[0] || null;
+    setSelectedFile(file);
+    setStatus(file ? "File selected. Click Upload when ready." : "", false);
   });
 
   dropZone.addEventListener("dragover", (event) => {
@@ -115,6 +156,18 @@ if (dropZone && uploadForm && fileInput && folderSelect && uploadStatus && progr
     dropZone.style.backgroundColor = "transparent";
 
     const droppedFile = event.dataTransfer?.files?.[0];
-    uploadWithXhr(droppedFile);
+    if (!droppedFile) {
+      setStatus("No file detected in drop", true);
+      return;
+    }
+
+    const dt = new DataTransfer();
+    dt.items.add(droppedFile);
+    fileInput.files = dt.files;
+
+    setSelectedFile(droppedFile);
+    setStatus("File selected from drop zone. Click Upload to continue.");
   });
+
+  setSelectedFile(null);
 }
