@@ -35,9 +35,9 @@ model File {
   name      String
   size      Int
   url       String
-  folderId  String
+  folderId  String?
   createdAt DateTime @default(now())
-  folder    Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folder    Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
 
   @@index([folderId])
 }

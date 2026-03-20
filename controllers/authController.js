@@ -58,5 +58,30 @@ exports.getLogout = (req, res, next) => {
 };
 
 exports.getDashboard = (req, res) => {
-  return res.render("dashboard", { user: req.user });
+  const error = req.query.error || null;
+  const success = req.query.success || null;
+  return res.render("dashboard", { user: req.user, error, success });
+};
+
+exports.postUpload = async (req, res) => {
+  const folderId = req.body.folderId || null;
+
+  if (!req.file) {
+    return res.redirect("/dashboard?error=Please+select+a+file");
+  }
+
+  try {
+    await prisma.file.create({
+      data: {
+        name: req.file.originalname,
+        size: req.file.size,
+        url: `/uploads/${req.file.filename}`,
+        folderId,
+      },
+    });
+
+    return res.redirect("/dashboard?success=File+uploaded");
+  } catch (error) {
+    return res.redirect("/dashboard?error=Upload+failed");
+  }
 };
