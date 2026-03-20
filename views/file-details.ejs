@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Details</title>
+  </head>
+  <body>
+    <h1>File details</h1>
+
+    <p><strong>Name:</strong> <%= file.name %></p>
+    <p><strong>Size:</strong> <%= file.size %> bytes</p>
+    <p><strong>Uploaded:</strong> <%= file.createdAt.toISOString() %></p>
+
+    <p>
+      <a href="/files/<%= file.id %>/download">Download</a>
+    </p>
+
+    <p><a href="/folders">Back to folders</a></p>
+    <p><a href="/dashboard">Back to dashboard</a></p>
+  </body>
+</html>

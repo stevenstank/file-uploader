@@ -71,12 +71,27 @@ exports.postUpload = async (req, res) => {
   }
 
   try {
+    if (folderId) {
+      const folder = await prisma.folder.findFirst({
+        where: {
+          id: folderId,
+          userId: req.user.id,
+        },
+        select: { id: true },
+      });
+
+      if (!folder) {
+        return res.redirect("/dashboard?error=Invalid+folder");
+      }
+    }
+
     await prisma.file.create({
       data: {
         name: req.file.originalname,
         size: req.file.size,
         url: `/uploads/${req.file.filename}`,
         folderId,
+        userId: req.user.id,
       },
     });
 
