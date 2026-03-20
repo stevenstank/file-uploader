@@ -9,6 +9,7 @@ const prisma = require("./lib/prisma");
 const passport = require("./config/passport");
 const indexRoutes = require("./routes/index");
 const authRoutes = require("./routes/auth");
+const folderRoutes = require("./routes/folders");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -48,6 +49,7 @@ app.use((req, res, next) => {
 
 app.use("/", indexRoutes);
 app.use("/", authRoutes);
+app.use("/", folderRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

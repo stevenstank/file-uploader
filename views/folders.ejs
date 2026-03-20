@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Folders</title>
+  </head>
+  <body>
+    <h1>Your folders</h1>
+
+    <% if (error) { %>
+      <p><%= error %></p>
+    <% } %>
+
+    <% if (success) { %>
+      <p><%= success %></p>
+    <% } %>
+
+    <h2>Create folder</h2>
+    <form action="/folders" method="POST">
+      <input name="name" type="text" placeholder="Folder name" required />
+      <button type="submit">Create</button>
+    </form>
+
+    <h2>Folder list</h2>
+    <% if (!folders.length) { %>
+      <p>No folders yet.</p>
+    <% } %>
+
+    <ul>
+      <% folders.forEach((folder) => { %>
+        <li>
+          <a href="/folders/<%= folder.id %>"><%= folder.name %></a>
+          (<%= folder._count.files %> files)
+          <form action="/folders/<%= folder.id %>/delete" method="POST" style="display:inline;">
+            <button type="submit">Delete</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+
+    <p><a href="/dashboard">Back to dashboard</a></p>
+  </body>
+</html>
