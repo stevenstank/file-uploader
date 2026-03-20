@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const prisma = require("../lib/prisma");
+const https = require("https");
 
 const getExpiryFromDays = (days) => {
   if (!Number.isInteger(days) || days <= 0 || days > 365) {
@@ -91,5 +92,49 @@ exports.getSharedResource = async (req, res) => {
     notFound: false,
     folder: shareLink.folder,
     expiresAt: shareLink.expiresAt,
+    shareId: shareLink.id,
   });
+};
+
+exports.downloadSharedFile = async (req, res) => {
+  const { fileId } = req.params;
+  const file = await prisma.file.findUnique({
+    where: { id: fileId },
+    select: {
+      id: true,
+      name: true,
+      url: true,
+    },
+  });
+
+  if (!file || !file.url) {
+    return res.status(404).send("File not found");
+  }
+
+  const fileName = (file.name || "downloaded-file").replace(/"/g, "");
+
+  return https
+    .get(file.url, (fileStream) => {
+      if ((fileStream.statusCode || 500) >= 400) {
+        return res.status(502).send("Failed to fetch file");
+      }
+
+      res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+      res.setHeader("Content-Type", "application/octet-stream");
+
+      fileStream.on("error", () => {
+        if (!res.headersSent) {
+          return res.status(502).send("Failed to stream file");
+        }
+        return res.end();
+      });
+
+      return fileStream.pipe(res);
+    })
+    .on("error", () => {
+      if (!res.headersSent) {
+        return res.status(502).send("Failed to download file");
+      }
+      return res.end();
+    });
 };

@@ -137,8 +137,7 @@
                   </div>
                   <% if (file.url) { %>
                     <div class="file-actions">
-                      <a class="btn-link" href="<%= file.url %>" target="_blank" rel="noopener noreferrer">View</a>
-                      <a class="btn-link" href="<%= file.url %>" target="_blank" rel="noopener noreferrer" download>Download</a>
+                      <a class="btn-link" href="/share/file/<%= file.id %>/download">Download</a>
                     </div>
                   <% } else { %>
                     <span class="meta">URL missing</span>

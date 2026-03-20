@@ -20,7 +20,7 @@
       <p>Valid until: <%= expiresAt.toISOString() %></p>
 
       <% if (file.url) { %>
-        <p><a href="<%= file.url %>" target="_blank" rel="noopener noreferrer">Open / Download File</a></p>
+        <p><a href="/share/file/<%= file.id %>/download">Download</a></p>
       <% } else { %>
         <p>This file has no downloadable URL.</p>
       <% } %>

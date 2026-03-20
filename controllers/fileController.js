@@ -1,6 +1,5 @@
 const prisma = require("../lib/prisma");
 const path = require("path");
-const https = require("https");
 const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
 
@@ -154,34 +153,11 @@ exports.downloadFileById = async (req, res) => {
     }
 
     const downloadName = buildDownloadName(file).replace(/"/g, "");
+    const attachmentUrl = file.url.replace("/upload/", "/upload/fl_attachment/");
+    const separator = attachmentUrl.includes("?") ? "&" : "?";
+    const finalUrl = `${attachmentUrl}${separator}filename=${encodeURIComponent(downloadName)}`;
 
-    return https
-      .get(file.url, (response) => {
-        if ((response.statusCode || 500) >= 400) {
-          return res.status(502).send("Failed to fetch file from storage");
-        }
-
-      res.setHeader(
-        "Content-Disposition",
-          `attachment; filename="${downloadName}"`
-      );
-        res.setHeader("Content-Type", "application/octet-stream");
-
-        response.on("error", () => {
-          if (!res.headersSent) {
-            return res.status(502).send("Failed to stream file");
-          }
-          res.end();
-        });
-
-        response.pipe(res);
-      })
-      .on("error", () => {
-        if (!res.headersSent) {
-          return res.status(502).send("Failed to download file");
-        }
-        res.end();
-      });
+    return res.redirect(finalUrl);
   } catch (err) {
     console.error(err);
     return res.status(500).send("Download failed");
