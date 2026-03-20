@@ -62,7 +62,7 @@
             <strong><%= folder.name %></strong>
             <form action="/share-folder/<%= folder.id %>" method="POST" class="share-form">
               <label for="folder-days-<%= folder.id %>">Expires in (days)</label>
-              <div class="share-row">
+              <div class="container-row">
                 <input id="folder-days-<%= folder.id %>" class="share-days" type="number" name="days" min="1" max="365" value="1" required />
                 <span class="meta">days</span>
                 <button type="submit">Share Folder</button>

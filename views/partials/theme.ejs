@@ -68,6 +68,7 @@
     max-width: 100%;
     margin: 6px 0 12px;
     padding: 8px 10px;
+    min-height: 40px;
     background: #111111;
     color: var(--text);
     border: 1px solid #3a3a3a;
@@ -81,6 +82,7 @@
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 8px 12px;
+    min-height: 40px;
     cursor: pointer;
     font: inherit;
   }
@@ -282,9 +284,17 @@
     gap: 8px;
   }
 
+  .container-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
   .share-days {
     width: 80px;
     min-width: 80px;
+    height: 40px;
     margin: 0;
   }
 
@@ -353,5 +363,22 @@
   .auth-link {
     text-align: center;
     margin-top: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .upload-form input,
+    .upload-form select {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .container-row {
+      width: 100%;
+    }
+
+    .share-days {
+      width: 100%;
+      min-width: 0;
+    }
   }
 </style>
