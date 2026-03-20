@@ -6,16 +6,16 @@
     <title>Login</title>
     <%- include("partials/theme") %>
   </head>
-  <body>
+  <body class="auth-page">
     <main class="container">
-      <section class="card">
-        <h1>Login</h1>
+      <section class="auth-card">
+        <h1 class="auth-heading">Login</h1>
 
         <% if (error) { %>
           <p class="message error"><%= error %></p>
         <% } %>
 
-        <form action="/login" method="POST">
+        <form action="/login" method="POST" class="auth-form">
           <label for="email">Email</label>
           <input id="email" name="email" type="email" required />
 
@@ -25,7 +25,7 @@
           <button type="submit">Login</button>
         </form>
 
-        <p><a href="/register">Need an account? Register</a></p>
+        <p class="auth-link">Don't have an account? <a href="/register">Signup</a></p>
       </section>
       <%- include("partials/footer") %>
     </main>

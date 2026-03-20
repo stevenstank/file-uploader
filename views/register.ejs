@@ -6,26 +6,26 @@
     <title>Register</title>
     <%- include("partials/theme") %>
   </head>
-  <body>
+  <body class="auth-page">
     <main class="container">
-      <section class="card">
-        <h1>Register</h1>
+      <section class="auth-card">
+        <h1 class="auth-heading">Signup</h1>
 
         <% if (error) { %>
           <p class="message error"><%= error %></p>
         <% } %>
 
-        <form action="/register" method="POST">
+        <form action="/register" method="POST" class="auth-form">
           <label for="name">Name</label>
           <input id="name" type="text" name="name" placeholder="Enter your name" required />
           <label for="email">Email</label>
           <input id="email" type="email" name="email" placeholder="Enter your email" required />
           <label for="password">Password</label>
           <input id="password" type="password" name="password" placeholder="Enter password" required />
-          <button type="submit">Register</button>
+          <button type="submit">Signup</button>
         </form>
 
-        <p><a href="/login">Already have an account? Login</a></p>
+        <p class="auth-link">Already have an account? <a href="/login">Login</a></p>
       </section>
       <%- include("partials/footer") %>
     </main>

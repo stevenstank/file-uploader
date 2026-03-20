@@ -233,4 +233,64 @@
     height: 100%;
     background: var(--accent);
   }
+
+  body.auth-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  body.auth-page .container {
+    width: 100%;
+    max-width: 460px;
+    padding: 0;
+  }
+
+  .auth-card {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .auth-heading {
+    color: var(--heading);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .auth-form label {
+    display: block;
+    color: var(--heading);
+    margin-bottom: 6px;
+  }
+
+  .auth-form input {
+    width: 100%;
+    padding: 10px;
+    margin: 0 0 14px;
+    background: #0f0f0f;
+    color: #ffffff;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+  }
+
+  .auth-form button {
+    width: 100%;
+    background: var(--accent);
+    color: #000000;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .auth-form button:hover:not(:disabled) {
+    background: #e6bf00;
+    color: #000000;
+  }
+
+  .auth-link {
+    text-align: center;
+    margin-top: 12px;
+  }
 </style>
