@@ -8,6 +8,7 @@ const prisma = require("./lib/prisma");
 const passport = require("./config/passport");
 const indexRoutes = require("./routes/index");
 const authRoutes = require("./routes/auth");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 const folderRoutes = require("./routes/folders");
 const fileRoutes = require("./routes/files");
 
@@ -21,6 +22,12 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    },
     store: new PrismaSessionStore(prisma, {
       checkPeriod: 2 * 60 * 1000,
       dbRecordIdIsSessionId: true,
@@ -43,6 +50,7 @@ app.use((req, res, next) => {
 
 app.use("/", indexRoutes);
 app.use("/", authRoutes);
+app.use("/", dashboardRoutes);
 app.use("/", folderRoutes);
 app.use("/", fileRoutes);
 

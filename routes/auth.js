@@ -5,7 +5,6 @@ const {
   register,
   getLogin,
   getLogout,
-  getDashboard,
 } = require("../controllers/authController");
 const fileController = require("../controllers/fileController");
 const { isAuthenticated } = require("../middleware/authMiddleware");
@@ -20,15 +19,12 @@ router.get("/login", getLogin);
 router.post(
   "/login",
   passport.authenticate("local", {
-    failureRedirect: "/login?error=1",
-  }),
-  (req, res) => {
-    res.redirect("/dashboard");
-  }
+    successRedirect: "/dashboard",
+    failureRedirect: "/login",
+  })
 );
 
 router.get("/logout", getLogout);
-router.get("/dashboard", isAuthenticated, getDashboard);
 router.post("/upload", isAuthenticated, upload.single("file"), fileController.uploadFile);
 
 module.exports = router;

@@ -4,7 +4,7 @@ const getOwnedFile = (fileId, userId) => {
   return prisma.file.findFirst({
     where: {
       id: fileId,
-      folder: { userId },
+      userId,
     },
   });
 };
@@ -37,8 +37,9 @@ exports.uploadFile = async (req, res) => {
     data: {
       name: file.originalname,
       size: file.size,
-      url: file.path,
+      url: file.path || null,
       folderId: folderId,
+      userId: req.user.id,
     },
   });
 
@@ -67,8 +68,30 @@ exports.downloadFileById = async (req, res) => {
       return res.redirect("/folders?error=File+not+found");
     }
 
+    if (!file.url) {
+      return res.redirect("/dashboard?error=File+URL+missing");
+    }
+
     return res.redirect(file.url);
   } catch (error) {
     return res.redirect("/folders?error=Unable+to+download+file");
+  }
+};
+
+exports.deleteFileById = async (req, res) => {
+  try {
+    const file = await getOwnedFile(req.params.id, req.user.id);
+
+    if (!file) {
+      return res.redirect("/dashboard?error=File+not+found");
+    }
+
+    await prisma.file.delete({
+      where: { id: file.id },
+    });
+
+    return res.redirect("/dashboard");
+  } catch (error) {
+    return res.redirect("/dashboard?error=Unable+to+delete+file");
   }
 };

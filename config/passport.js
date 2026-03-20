@@ -5,25 +5,21 @@ const prisma = require("../lib/prisma");
 
 passport.use(
   new LocalStrategy(
-    { usernameField: "email", passwordField: "password" },
+    { usernameField: "email" },
     async (email, password, done) => {
       try {
         const user = await prisma.user.findUnique({
           where: { email },
         });
 
-        if (!user) {
-          return done(null, false, { message: "Invalid credentials" });
-        }
+        if (!user) return done(null, false);
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-          return done(null, false, { message: "Invalid credentials" });
-        }
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) return done(null, false);
 
         return done(null, user);
-      } catch (error) {
-        return done(error);
+      } catch (err) {
+        return done(err);
       }
     }
   )
@@ -38,9 +34,9 @@ passport.deserializeUser(async (id, done) => {
     const user = await prisma.user.findUnique({
       where: { id },
     });
-    done(null, user || false);
-  } catch (error) {
-    done(error);
+    done(null, user);
+  } catch (err) {
+    done(err);
   }
 });
 

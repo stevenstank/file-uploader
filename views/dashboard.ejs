@@ -1,61 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard</title>
-  </head>
-  <body>
-    <h1>Dashboard</h1>
-    <p>Hey <%= user.name %></p>
+<h1>Dashboard</h1>
 
-    <% if (error) { %>
-      <p><%= error %></p>
-    <% } %>
+<p>Hey <%= user.name %></p>
 
-    <% if (success) { %>
-      <p><%= success %></p>
-    <% } %>
+<nav>
+  <% if (currentUser) { %>
+    <a href="/dashboard">Dashboard</a>
+    <a href="#upload">Upload</a>
+    <a href="/logout">Logout</a>
+  <% } else { %>
+    <a href="/login">Login</a>
+    <a href="/register">Signup</a>
+  <% } %>
+</nav>
 
-    <h2>Upload file</h2>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-      <input name="file" type="file" required />
+<h2>Create Folder</h2>
+<form action="/folders" method="POST">
+  <input type="text" name="name" placeholder="Folder name" required />
+  <button type="submit">Create Folder</button>
+</form>
 
-      <select name="folderId" required>
-        <option value="">Select Folder</option>
+<h2 id="upload">Upload File</h2>
+<form action="/upload" method="POST" enctype="multipart/form-data">
+  <input type="file" name="file" required />
 
-        <% folders.forEach(folder => { %>
-          <option value="<%= folder.id %>">
-            <%= folder.name %>
-          </option>
-        <% }) %>
-      </select>
-
-      <button type="submit">Upload</button>
-    </form>
-
-    <h2>Create folder</h2>
-    <form action="/folders" method="POST">
-      <input type="text" name="name" placeholder="Folder name" required />
-      <button type="submit">Create Folder</button>
-    </form>
-
-    <h2>Files</h2>
-    <% if (files.length === 0) { %>
-      <p>No files uploaded</p>
-    <% } %>
-
-    <% files.forEach(file => { %>
-      <div>
-        <p><%= file.name %></p>
-        <p><%= file.size %> bytes</p>
-      </div>
+  <select name="folderId" required>
+    <option value="">Select Folder</option>
+    <% folders.forEach(folder => { %>
+      <option value="<%= folder.id %>"><%= folder.name %></option>
     <% }) %>
+  </select>
 
-    <p>Allowed: jpg, png, pdf (max 5MB)</p>
+  <button type="submit">Upload</button>
 
-    <p><a href="/folders">Manage folders</a></p>
-    <p><a href="/">Home</a></p>
-    <p><a href="/logout">Logout</a></p>
-  </body>
-</html>
+</form>
+
+<h2>Your Files</h2>
+<% if (!files.length) { %>
+  <p>No files uploaded yet.</p>
+<% } %>
+
+<ul>
+  <% files.forEach((file) => { %>
+    <li>
+      <strong><%= file.name %></strong> (<%= file.size %> bytes)
+      <% if (file.folder) { %>
+        - Folder: <%= file.folder.name %>
+      <% } %>
+      <a href="/files/<%= file.id %>">View</a>
+      <a href="/files/<%= file.id %>/download">Download</a>
+      <form action="/files/<%= file.id %>/delete" method="POST" style="display:inline;">
+        <button type="submit">Delete</button>
+      </form>
+    </li>
+  <% }) %>
+</ul>

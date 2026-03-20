@@ -63,20 +63,19 @@ exports.getDashboard = (req, res) => {
 };
 
 exports.dashboard = async (req, res) => {
-  const error = req.query.error || null;
-  const success = req.query.success || null;
-
   const folders = await prisma.folder.findMany({
     where: {
       userId: req.user.id,
     },
+    orderBy: { createdAt: "desc" },
   });
 
   const files = await prisma.file.findMany({
     where: {
-      folder: {
-        userId: req.user.id,
-      },
+      userId: req.user.id,
+    },
+    include: {
+      folder: true,
     },
     orderBy: { createdAt: "desc" },
   });
@@ -85,8 +84,6 @@ exports.dashboard = async (req, res) => {
     user: req.user,
     folders,
     files,
-    error,
-    success,
   });
 };
 

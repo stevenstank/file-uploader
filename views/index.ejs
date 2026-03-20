@@ -9,11 +9,16 @@
     <h1><%= message %></h1>
     <% if (currentUser) { %>
       <p>Logged in as <%= currentUser.email %></p>
-      <a href="/dashboard">Go to Dashboard</a>
-      <a href="/logout">Logout</a>
+      <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/dashboard#upload">Upload</a>
+        <a href="/logout">Logout</a>
+      </nav>
     <% } else { %>
-      <a href="/register">Register</a>
-      <a href="/login">Login</a>
+      <nav>
+        <a href="/login">Login</a>
+        <a href="/register">Signup</a>
+      </nav>
     <% } %>
   </body>
 </html>
