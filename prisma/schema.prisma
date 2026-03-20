@@ -41,3 +41,10 @@ model File {
 
   @@index([folderId])
 }
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+}
