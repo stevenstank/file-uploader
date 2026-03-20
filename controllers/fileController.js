@@ -10,40 +10,59 @@ const getOwnedFile = (fileId, userId) => {
 };
 
 exports.uploadFile = async (req, res) => {
-  const file = req.file;
-  const { folderId } = req.body;
+  const wantsJson =
+    req.headers.accept?.includes("application/json") ||
+    req.headers["x-requested-with"] === "XMLHttpRequest";
 
-  if (!file) {
-    return res.send("No file uploaded");
+  try {
+    const file = req.file;
+    const folderId = req.body.folderId || null;
+
+    if (!file) {
+      if (wantsJson) {
+        return res.status(400).json({ ok: false, error: "No file uploaded" });
+      }
+      return res.send("No file uploaded");
+    }
+
+    if (folderId) {
+      const folder = await prisma.folder.findFirst({
+        where: {
+          id: folderId,
+          userId: req.user.id,
+        },
+        select: { id: true },
+      });
+
+      if (!folder) {
+        if (wantsJson) {
+          return res.status(400).json({ ok: false, error: "Invalid folder" });
+        }
+        return res.redirect("/dashboard?error=Invalid+folder");
+      }
+    }
+
+    await prisma.file.create({
+      data: {
+        name: file.originalname,
+        size: file.size,
+        url: file.path || null,
+        folderId,
+        userId: req.user.id,
+      },
+    });
+
+    if (wantsJson) {
+      return res.json({ ok: true });
+    }
+
+    return res.redirect("/dashboard");
+  } catch (error) {
+    if (wantsJson) {
+      return res.status(500).json({ ok: false, error: "Upload failed" });
+    }
+    return res.redirect("/dashboard?error=Upload+failed");
   }
-
-  if (!folderId) {
-    return res.send("Folder not selected");
-  }
-
-  const folder = await prisma.folder.findFirst({
-    where: {
-      id: folderId,
-      userId: req.user.id,
-    },
-    select: { id: true },
-  });
-
-  if (!folder) {
-    return res.send("Folder not selected");
-  }
-
-  await prisma.file.create({
-    data: {
-      name: file.originalname,
-      size: file.size,
-      url: file.path || null,
-      folderId: folderId,
-      userId: req.user.id,
-    },
-  });
-
-  return res.redirect("/dashboard");
 };
 
 exports.getFileById = async (req, res) => {

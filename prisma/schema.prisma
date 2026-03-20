@@ -35,9 +35,9 @@ model File {
   name      String
   size      Int
   url       String?
-  folderId  String
+  folderId  String?
   userId    String?
-  folder    Folder   @relation(fields: [folderId], references: [id])
+  folder    Folder?  @relation(fields: [folderId], references: [id])
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
 }

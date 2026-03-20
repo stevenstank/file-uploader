@@ -20,11 +20,11 @@
 </form>
 
 <h2 id="upload">Upload File</h2>
-<form action="/upload" method="POST" enctype="multipart/form-data">
-  <input type="file" name="file" required />
+<form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data">
+  <input id="file-input" type="file" name="file" required />
 
-  <select name="folderId" required>
-    <option value="">Select Folder</option>
+  <select id="folder-select" name="folderId">
+    <option value="">No Folder</option>
     <% folders.forEach(folder => { %>
       <option value="<%= folder.id %>"><%= folder.name %></option>
     <% }) %>
@@ -33,6 +33,14 @@
   <button type="submit">Upload</button>
 
 </form>
+
+<div
+  id="drop-zone"
+  style="margin-top: 12px; padding: 24px; border: 2px dashed #888; border-radius: 8px; text-align: center;"
+>
+  Drag and drop a file here to upload automatically
+</div>
+<p id="upload-status"></p>
 
 <h2>Your Files</h2>
 <% if (!files.length) { %>
@@ -54,3 +62,5 @@
     </li>
   <% }) %>
 </ul>
+
+<script src="/js/dashboard-upload.js"></script>

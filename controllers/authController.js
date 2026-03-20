@@ -21,7 +21,7 @@ exports.postRegister = async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(400).render("register", { error: "Email is already registered" });
+      return res.status(400).render("register", { error: "This account already exists. Please log in." });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
