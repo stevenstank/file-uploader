@@ -4,32 +4,157 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shared Folder</title>
+    <style>
+      :root {
+        --bg: #0f0f0f;
+        --card: #1a1a1a;
+        --text: #ffffff;
+        --heading: #ffd60a;
+        --muted: #b7b7b7;
+        --border: #303030;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      }
+
+      .page {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: var(--heading);
+        margin-top: 0;
+      }
+
+      p,
+      li,
+      span,
+      strong {
+        color: var(--text);
+      }
+
+      a {
+        color: var(--heading);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .meta {
+        color: var(--muted);
+      }
+
+      .file-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .file-item {
+        background: #151515;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .file-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn-link {
+        display: inline-block;
+        border: 1px solid #ffd60a;
+        border-radius: 8px;
+        padding: 6px 10px;
+      }
+    </style>
   </head>
   <body>
-    <% if (notFound) { %>
-      <h1>Share link not found</h1>
-      <p>This share link does not exist.</p>
-      <p><a href="/">Back to home</a></p>
-    <% } else if (expired) { %>
-      <h1>Link expired</h1>
-      <p>This shared link expired on <%= expiresAt.toISOString() %>.</p>
-      <p><a href="/">Back to home</a></p>
-    <% } else { %>
-      <h1>Shared Folder: <%= folder.name %></h1>
-      <p>Valid until: <%= expiresAt.toISOString() %></p>
+    <main class="page">
+      <% if (notFound) { %>
+        <section class="card">
+          <h1>Shared Folder</h1>
+          <p>Share link not found.</p>
+          <p><a href="/">Back to home</a></p>
+        </section>
+      <% } else if (expired) { %>
+        <section class="card">
+          <h1>Shared Folder</h1>
+          <p>Link expired on <span class="meta"><%= expiresAt.toISOString() %></span>.</p>
+          <p><a href="/">Back to home</a></p>
+        </section>
+      <% } else { %>
+        <section class="card">
+          <h1>Shared Folder</h1>
+          <h2><%= folder.name %></h2>
+          <p class="meta">Valid until: <%= expiresAt.toISOString() %></p>
+        </section>
 
-      <% if (!folder.files.length) { %>
-        <p>No files in this folder.</p>
+        <section class="card">
+          <h3>Files</h3>
+
+          <% if (!folder.files.length) { %>
+            <p>No files in this folder.</p>
+          <% } else { %>
+            <ul class="file-list">
+              <% folder.files.forEach((file) => { %>
+                <li class="file-item">
+                  <div>
+                    <p><strong><%= file.name %></strong></p>
+                    <p class="meta"><%= file.size %> bytes</p>
+                  </div>
+                  <% if (file.url) { %>
+                    <div class="file-actions">
+                      <a class="btn-link" href="<%= file.url %>" target="_blank" rel="noopener noreferrer">View</a>
+                      <a class="btn-link" href="<%= file.url %>" target="_blank" rel="noopener noreferrer" download>Download</a>
+                    </div>
+                  <% } else { %>
+                    <span class="meta">URL missing</span>
+                  <% } %>
+                </li>
+              <% }) %>
+            </ul>
+          <% } %>
+        </section>
+
+        <section class="card">
+          <p><a href="/">Back to home</a></p>
+        </section>
       <% } %>
 
-      <ul>
-        <% folder.files.forEach((file) => { %>
-          <li><strong><%= file.name %></strong> (<%= file.size %> bytes)</li>
-        <% }) %>
-      </ul>
-
-      <p><a href="/">Back to home</a></p>
-    <% } %>
-    <%- include("partials/footer") %>
+      <%- include("partials/footer") %>
+    </main>
   </body>
 </html>

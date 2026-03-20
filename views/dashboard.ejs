@@ -61,9 +61,10 @@
           <li class="list-item">
             <strong><%= folder.name %></strong>
             <form action="/share-folder/<%= folder.id %>" method="POST" class="share-form">
-              <label for="folder-days-<%= folder.id %>">Share duration (in days)</label>
+              <label for="folder-days-<%= folder.id %>">Expires in (days)</label>
               <div class="share-row">
                 <input id="folder-days-<%= folder.id %>" class="share-days" type="number" name="days" min="1" max="365" value="1" required />
+                <span class="meta">days</span>
                 <button type="submit">Share Folder</button>
               </div>
               <p class="share-help">This link will expire after the selected number of days.</p>
@@ -125,14 +126,6 @@
             <% } else { %>
               <span class="meta">URL missing</span>
             <% } %>
-            <form action="/share-file/<%= file.id %>" method="POST" class="share-form">
-              <label for="file-days-<%= file.id %>">Link valid for (days)</label>
-              <div class="share-row">
-                <input id="file-days-<%= file.id %>" class="share-days" type="number" name="days" min="1" max="365" value="1" required />
-                <button type="submit">Share File</button>
-              </div>
-              <p class="share-help">This link will expire after the selected number of days.</p>
-            </form>
             <form id="delete-file-<%= file.id %>" action="/files/<%= file.id %>/delete" method="POST" class="inline">
               <button type="button" onclick="openDeleteModal('delete-file-<%= file.id %>')">Delete</button>
             </form>

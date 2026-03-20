@@ -263,8 +263,9 @@
 
   .share-form {
     display: inline-flex;
-    flex-direction: column;
-    gap: 6px;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
     margin-left: 8px;
     vertical-align: top;
   }
@@ -272,6 +273,7 @@
   .share-form label {
     color: var(--heading);
     font-size: 0.85rem;
+    margin: 0;
   }
 
   .share-row {
@@ -290,6 +292,7 @@
     margin: 0;
     color: #b7b7b7;
     font-size: 0.82rem;
+    width: 100%;
   }
 
   body.auth-page {
