@@ -32,15 +32,15 @@ if (dropZone && uploadForm && fileInput && folderSelect && uploadStatus && progr
     const data = new FormData();
     data.append("file", file);
 
-    const selectedFolder = folderSelect.value;
-    if (selectedFolder) {
-      data.append("folderId", selectedFolder);
-    }
+    const selectedFolderId = (folderSelect.value || "").trim();
+    data.append("folderId", selectedFolderId);
 
     setStatus("Uploading...");
     setProgress(0);
 
-    console.log(`[upload] starting upload: ${file.name}, ${formatBytes(file.size)}`);
+    console.log(
+      `[upload] starting upload: ${file.name}, ${formatBytes(file.size)}, folderId=${selectedFolderId || "(none)"}`
+    );
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/upload", true);

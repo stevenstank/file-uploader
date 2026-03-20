@@ -40,6 +40,7 @@ model File {
   userId    String?
   folder    Folder?  @relation(fields: [folderId], references: [id])
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  shareLinks ShareLink[]
   createdAt DateTime @default(now())
 }
 
@@ -52,8 +53,10 @@ model Session {
 
 model ShareLink {
   id        String   @id @default(uuid())
-  folderId  String
+  fileId    String?
+  folderId  String?
   expiresAt DateTime
   createdAt DateTime @default(now())
-  folder    Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folder    Folder?  @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  file      File?    @relation(fields: [fileId], references: [id], onDelete: Cascade)
 }

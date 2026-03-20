@@ -16,7 +16,7 @@ exports.uploadFile = async (req, res) => {
 
   try {
     const file = req.file;
-    const folderId = req.body.folderId || null;
+    const folderId = (req.body.folderId || "").trim() || null;
 
     if (!file) {
       if (wantsJson) {

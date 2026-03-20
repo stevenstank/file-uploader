@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shared File</title>
+  </head>
+  <body>
+    <% if (notFound) { %>
+      <h1>Share link not found</h1>
+      <p>This share link does not exist.</p>
+      <p><a href="/">Back to home</a></p>
+    <% } else if (expired) { %>
+      <h1>Link expired</h1>
+      <p>This shared link expired on <%= expiresAt.toISOString() %>.</p>
+      <p><a href="/">Back to home</a></p>
+    <% } else { %>
+      <h1>Shared File: <%= file.name %></h1>
+      <p>File size: <%= file.size %> bytes</p>
+      <p>Valid until: <%= expiresAt.toISOString() %></p>
+
+      <% if (file.url) { %>
+        <p><a href="<%= file.url %>" target="_blank" rel="noopener noreferrer">Open / Download File</a></p>
+      <% } else { %>
+        <p>This file has no downloadable URL.</p>
+      <% } %>
+
+      <p><a href="/">Back to home</a></p>
+    <% } %>
+  </body>
+</html>
