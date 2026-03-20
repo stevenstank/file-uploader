@@ -9,10 +9,10 @@ exports.getRegister = (req, res) => {
 };
 
 exports.postRegister = async (req, res) => {
-  const { email, password } = req.body;
+  const { name, email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).render("register", { error: "Email and password are required" });
+  if (!name || !email || !password) {
+    return res.status(400).render("register", { error: "Name, email and password are required" });
   }
 
   try {
@@ -28,6 +28,7 @@ exports.postRegister = async (req, res) => {
 
     await prisma.user.create({
       data: {
+        name,
         email,
         password: hashedPassword,
       },
@@ -58,15 +59,38 @@ exports.getLogout = (req, res, next) => {
 };
 
 exports.getDashboard = (req, res) => {
+  return exports.dashboard(req, res);
+};
+
+exports.dashboard = async (req, res) => {
   const error = req.query.error || null;
   const success = req.query.success || null;
-  return res.render("dashboard", { user: req.user, error, success });
+  const files = await prisma.file.findMany({
+    where: {
+      OR: [
+        { userId: req.user.id },
+        {
+          folder: {
+            userId: req.user.id,
+          },
+        },
+      ],
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return res.render("dashboard", { user: req.user, files, error, success });
+};
+
+exports.register = async (req, res) => {
+  return exports.postRegister(req, res);
 };
 
 exports.postUpload = async (req, res) => {
   const folderId = req.body.folderId || null;
+  const file = req.file;
 
-  if (!req.file) {
+  if (!file) {
     return res.redirect("/dashboard?error=Please+select+a+file");
   }
 
@@ -87,9 +111,9 @@ exports.postUpload = async (req, res) => {
 
     await prisma.file.create({
       data: {
-        name: req.file.originalname,
-        size: req.file.size,
-        url: req.file.path,
+        name: file.originalname,
+        size: file.size,
+        url: file.path,
         folderId,
         userId: req.user.id,
       },

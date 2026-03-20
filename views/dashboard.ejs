@@ -7,7 +7,7 @@
   </head>
   <body>
     <h1>Dashboard</h1>
-    <p>Welcome, <%= user.email %></p>
+    <p>Hey <%= user.name %></p>
 
     <% if (error) { %>
       <p><%= error %></p>
@@ -22,6 +22,24 @@
       <input name="file" type="file" required />
       <button type="submit">Upload</button>
     </form>
+
+    <h2>Create folder</h2>
+    <form action="/folders" method="POST">
+      <input type="text" name="name" placeholder="Folder name" required />
+      <button type="submit">Create Folder</button>
+    </form>
+
+    <h2>Files</h2>
+    <% if (files.length === 0) { %>
+      <p>No files uploaded</p>
+    <% } %>
+
+    <% files.forEach(file => { %>
+      <div>
+        <p><%= file.name %></p>
+        <p><%= file.size %> bytes</p>
+      </div>
+    <% }) %>
 
     <p>Allowed: jpg, png, pdf (max 5MB)</p>
 

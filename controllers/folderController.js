@@ -22,6 +22,10 @@ exports.getFolders = async (req, res) => {
 };
 
 exports.postFolders = async (req, res) => {
+  return exports.createFolder(req, res);
+};
+
+exports.createFolder = async (req, res) => {
   const name = (req.body.name || "").trim();
 
   if (!name) {

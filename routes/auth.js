@@ -2,7 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const {
   getRegister,
-  postRegister,
+  register,
   getLogin,
   getLogout,
   getDashboard,
@@ -14,7 +14,7 @@ const { upload, MAX_FILE_SIZE } = require("../config/multer");
 const router = express.Router();
 
 router.get("/register", getRegister);
-router.post("/register", postRegister);
+router.post("/register", register);
 
 router.get("/login", getLogin);
 router.post(
