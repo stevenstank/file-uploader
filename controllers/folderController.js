@@ -92,7 +92,7 @@ exports.postDeleteFolder = async (req, res) => {
       where: { id: folder.id },
     });
 
-    return res.redirect("/folders?success=Folder+deleted");
+    return res.redirect("/folders");
   } catch (err) {
     return res.redirect("/folders?error=Unable+to+delete+folder");
   }

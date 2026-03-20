@@ -234,6 +234,64 @@
     background: var(--accent);
   }
 
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 420px;
+    background: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .share-form {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-left: 8px;
+    vertical-align: top;
+  }
+
+  .share-form label {
+    color: var(--heading);
+    font-size: 0.85rem;
+  }
+
+  .share-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .share-days {
+    width: 80px;
+    min-width: 80px;
+    margin: 0;
+  }
+
+  .share-help {
+    margin: 0;
+    color: #b7b7b7;
+    font-size: 0.82rem;
+  }
+
   body.auth-page {
     display: flex;
     align-items: center;

@@ -4,44 +4,59 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Folder Details</title>
+    <%- include("partials/theme") %>
   </head>
   <body>
-    <h2><%= folder.name %></h2>
+    <main class="container">
+      <section class="card stack">
+        <h2><%= folder.name %></h2>
 
-    <h3>Share Folder</h3>
-    <% if (shareError) { %>
-      <p><%= shareError %></p>
-    <% } %>
-    <% if (shareSuccess) { %>
-      <p><%= shareSuccess %></p>
-    <% } %>
-    <form action="/share-folder/<%= folder.id %>" method="POST">
-      <label for="days">Link duration</label>
-      <select name="days" id="days" required>
-        <option value="1">1 day</option>
-        <option value="5">5 days</option>
-        <option value="10">10 days</option>
-      </select>
-      <button type="submit">Share Folder</button>
-    </form>
+        <h3>Share Folder</h3>
+        <% if (shareError) { %>
+          <p class="message error"><%= shareError %></p>
+        <% } %>
+        <% if (shareSuccess) { %>
+          <p class="message success"><%= shareSuccess %></p>
+        <% } %>
+        <form action="/share-folder/<%= folder.id %>" method="POST" class="share-form" style="margin-left:0;">
+          <label for="days">Link valid for (days)</label>
+          <div class="share-row">
+            <select name="days" id="days" class="share-days" required>
+              <option value="1">1 day</option>
+              <option value="5">5 days</option>
+              <option value="10">10 days</option>
+            </select>
+            <button type="submit">Share Folder</button>
+          </div>
+          <p class="share-help">This link will expire after the selected number of days.</p>
+        </form>
 
-    <% if (shareLink) { %>
-      <p>Share link:</p>
-      <p><a href="<%= shareLink %>" target="_blank" rel="noopener noreferrer"><%= shareLink %></a></p>
-    <% } %>
+        <% if (shareLink) { %>
+          <p>Share link:</p>
+          <p><a href="<%= shareLink %>" target="_blank" rel="noopener noreferrer"><%= shareLink %></a></p>
+        <% } %>
+      </section>
 
-    <% if (folder.files.length === 0) { %>
-      <p>No files in this folder</p>
-    <% } %>
+      <section class="card stack">
+        <h3>Files In This Folder</h3>
+        <% if (folder.files.length === 0) { %>
+          <p>No files in this folder</p>
+        <% } else { %>
+          <ul class="list">
+            <% folder.files.forEach(file => { %>
+              <li class="list-item">
+                <p><strong><%= file.name %></strong></p>
+                <p class="meta"><%= file.size %> bytes</p>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
 
-    <% folder.files.forEach(file => { %>
-      <div>
-        <p><%= file.name %></p>
-        <p><%= file.size %> bytes</p>
-      </div>
-    <% }) %>
+        <p><a href="/folders">Back to folders</a></p>
+        <p><a href="/dashboard">Back to dashboard</a></p>
+      </section>
 
-    <p><a href="/folders">Back to folders</a></p>
-    <p><a href="/dashboard">Back to dashboard</a></p>
+      <%- include("partials/footer") %>
+    </main>
   </body>
 </html>
