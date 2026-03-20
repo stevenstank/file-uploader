@@ -4,9 +4,45 @@ const getOwnedFile = (fileId, userId) => {
   return prisma.file.findFirst({
     where: {
       id: fileId,
-      OR: [{ userId }, { folder: { userId } }],
+      folder: { userId },
     },
   });
+};
+
+exports.uploadFile = async (req, res) => {
+  const file = req.file;
+  const { folderId } = req.body;
+
+  if (!file) {
+    return res.send("No file uploaded");
+  }
+
+  if (!folderId) {
+    return res.send("Folder not selected");
+  }
+
+  const folder = await prisma.folder.findFirst({
+    where: {
+      id: folderId,
+      userId: req.user.id,
+    },
+    select: { id: true },
+  });
+
+  if (!folder) {
+    return res.send("Folder not selected");
+  }
+
+  await prisma.file.create({
+    data: {
+      name: file.originalname,
+      size: file.size,
+      url: file.path,
+      folderId: folderId,
+    },
+  });
+
+  return res.redirect("/dashboard");
 };
 
 exports.getFileById = async (req, res) => {

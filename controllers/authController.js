@@ -65,62 +65,31 @@ exports.getDashboard = (req, res) => {
 exports.dashboard = async (req, res) => {
   const error = req.query.error || null;
   const success = req.query.success || null;
+
+  const folders = await prisma.folder.findMany({
+    where: {
+      userId: req.user.id,
+    },
+  });
+
   const files = await prisma.file.findMany({
     where: {
-      OR: [
-        { userId: req.user.id },
-        {
-          folder: {
-            userId: req.user.id,
-          },
-        },
-      ],
+      folder: {
+        userId: req.user.id,
+      },
     },
     orderBy: { createdAt: "desc" },
   });
 
-  return res.render("dashboard", { user: req.user, files, error, success });
+  return res.render("dashboard", {
+    user: req.user,
+    folders,
+    files,
+    error,
+    success,
+  });
 };
 
 exports.register = async (req, res) => {
   return exports.postRegister(req, res);
-};
-
-exports.postUpload = async (req, res) => {
-  const folderId = req.body.folderId || null;
-  const file = req.file;
-
-  if (!file) {
-    return res.redirect("/dashboard?error=Please+select+a+file");
-  }
-
-  try {
-    if (folderId) {
-      const folder = await prisma.folder.findFirst({
-        where: {
-          id: folderId,
-          userId: req.user.id,
-        },
-        select: { id: true },
-      });
-
-      if (!folder) {
-        return res.redirect("/dashboard?error=Invalid+folder");
-      }
-    }
-
-    await prisma.file.create({
-      data: {
-        name: file.originalname,
-        size: file.size,
-        url: file.path,
-        folderId,
-        userId: req.user.id,
-      },
-    });
-
-    return res.redirect("/dashboard?success=File+uploaded");
-  } catch (error) {
-    return res.redirect("/dashboard?error=Upload+failed");
-  }
 };

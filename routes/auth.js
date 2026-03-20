@@ -6,10 +6,10 @@ const {
   getLogin,
   getLogout,
   getDashboard,
-  postUpload,
 } = require("../controllers/authController");
+const fileController = require("../controllers/fileController");
 const { isAuthenticated } = require("../middleware/authMiddleware");
-const { upload, MAX_FILE_SIZE } = require("../config/multer");
+const { upload } = require("../config/multer");
 
 const router = express.Router();
 
@@ -29,17 +29,6 @@ router.post(
 
 router.get("/logout", getLogout);
 router.get("/dashboard", isAuthenticated, getDashboard);
-router.post("/upload", isAuthenticated, (req, res) => {
-  upload.single("file")(req, res, (error) => {
-    if (error) {
-      if (error.code === "LIMIT_FILE_SIZE") {
-        return res.redirect(`/dashboard?error=Max+file+size+is+${MAX_FILE_SIZE / (1024 * 1024)}MB`);
-      }
-      return res.redirect("/dashboard?error=" + encodeURIComponent(error.message));
-    }
-
-    return postUpload(req, res);
-  });
-});
+router.post("/upload", isAuthenticated, upload.single("file"), fileController.uploadFile);
 
 module.exports = router;

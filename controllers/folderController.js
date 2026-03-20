@@ -48,19 +48,14 @@ exports.createFolder = async (req, res) => {
 
 exports.getFolderById = async (req, res) => {
   try {
-    const folder = await prisma.folder.findFirst({
-      where: {
-        id: req.params.id,
-        userId: req.user.id,
-      },
+    const folder = await prisma.folder.findUnique({
+      where: { id: req.params.id },
       include: {
-        files: {
-          orderBy: { createdAt: "desc" },
-        },
+        files: true,
       },
     });
 
-    if (!folder) {
+    if (!folder || folder.userId !== req.user.id) {
       return res.redirect("/folders?error=Folder+not+found");
     }
 

@@ -6,21 +6,18 @@
     <title>Folder Details</title>
   </head>
   <body>
-    <h1>Folder: <%= folder.name %></h1>
+    <h2><%= folder.name %></h2>
 
-    <h2>Files</h2>
-    <% if (!folder.files.length) { %>
-      <p>No files in this folder.</p>
-    <% } else { %>
-      <ul>
-        <% folder.files.forEach((file) => { %>
-          <li>
-            <a href="/files/<%= file.id %>"><%= file.name %></a>
-            - <%= file.size %> bytes
-          </li>
-        <% }) %>
-      </ul>
+    <% if (folder.files.length === 0) { %>
+      <p>No files in this folder</p>
     <% } %>
+
+    <% folder.files.forEach(file => { %>
+      <div>
+        <p><%= file.name %></p>
+        <p><%= file.size %> bytes</p>
+      </div>
+    <% }) %>
 
     <p><a href="/folders">Back to folders</a></p>
     <p><a href="/dashboard">Back to dashboard</a></p>

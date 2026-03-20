@@ -18,7 +18,6 @@ model User {
   password  String
   createdAt DateTime @default(now())
   folders   Folder[]
-  files     File[]
 }
 
 model Folder {
@@ -36,15 +35,12 @@ model File {
   id        String   @id @default(uuid())
   name      String
   size      Int
-  url       String
-  folderId  String?
-  userId    String?
+  url       String?
+  folderId  String
   createdAt DateTime @default(now())
-  folder    Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  folder    Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   @@index([folderId])
-  @@index([userId])
 }
 
 model Session {
