@@ -88,7 +88,7 @@ npm start
 - Build command:
 
 ```bash
-npm install && npx prisma migrate deploy && npx prisma generate
+npm install && npx prisma generate && npx prisma migrate deploy
 ```
 
 - Start command:
@@ -98,6 +98,8 @@ npm start
 ```
 
 This ensures migrations are applied and Prisma Client is generated for the deployed schema.
+
+Important: do not use `npx prisma migrate dev` in production.
 
 ### 3. Set Environment Variables in Render
 
@@ -116,6 +118,8 @@ This ensures migrations are applied and Prisma Client is generated for the deplo
 ```bash
 npx prisma migrate deploy
 ```
+
+- Verify `DATABASE_URL` in Render points to your production Postgres instance.
 
 ## Notes
 
