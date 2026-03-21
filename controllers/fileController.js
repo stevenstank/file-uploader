@@ -2,6 +2,8 @@ const prisma = require("../lib/prisma");
 const path = require("path");
 const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
+const http = require("http");
+const https = require("https");
 
 // Cloudinary config
 cloudinary.config({
@@ -38,6 +40,41 @@ const buildDownloadName = (file) => {
   }
 
   return storedName || "downloaded-file";
+};
+
+const streamDownloadFromUrl = (res, fileUrl, fileName) => {
+  const parsedUrl = new URL(fileUrl);
+  const client = parsedUrl.protocol === "http:" ? http : https;
+
+  return client
+    .get(fileUrl, (fileStream) => {
+      if ((fileStream.statusCode || 500) >= 400) {
+        return res.status(502).send("Failed to fetch file");
+      }
+
+      const safeFileName = fileName.replace(/"/g, "");
+      const encodedFileName = encodeURIComponent(safeFileName);
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${safeFileName}"; filename*=UTF-8''${encodedFileName}`
+      );
+      res.setHeader("Content-Type", "application/octet-stream");
+
+      fileStream.on("error", () => {
+        if (!res.headersSent) {
+          return res.status(502).send("Failed to stream file");
+        }
+        return res.end();
+      });
+
+      return fileStream.pipe(res);
+    })
+    .on("error", () => {
+      if (!res.headersSent) {
+        return res.status(502).send("Failed to download file");
+      }
+      return res.end();
+    });
 };
 
 // ✅ FIXED UPLOAD (MANUAL CLOUDINARY)
@@ -152,12 +189,8 @@ exports.downloadFileById = async (req, res) => {
       return res.status(400).send("Invalid file URL");
     }
 
-    const downloadName = buildDownloadName(file).replace(/"/g, "");
-    const attachmentUrl = file.url.replace("/upload/", "/upload/fl_attachment/");
-    const separator = attachmentUrl.includes("?") ? "&" : "?";
-    const finalUrl = `${attachmentUrl}${separator}filename=${encodeURIComponent(downloadName)}`;
-
-    return res.redirect(finalUrl);
+    const downloadName = buildDownloadName(file);
+    return streamDownloadFromUrl(res, file.url, downloadName);
   } catch (err) {
     console.error(err);
     return res.status(500).send("Download failed");
