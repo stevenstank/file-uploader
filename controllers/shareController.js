@@ -2,14 +2,6 @@ const prisma = require("../lib/prisma");
 const http = require("http");
 const https = require("https");
 
-const getExpiryFromDays = (days) => {
-  if (!Number.isInteger(days) || days <= 0 || days > 365) {
-    return null;
-  }
-
-  return new Date(Date.now() + days * 24 * 60 * 60 * 1000);
-};
-
 const streamDownloadFromUrl = (res, fileUrl, fileName) => {
   const parsedUrl = new URL(fileUrl);
   const client = parsedUrl.protocol === "http:" ? http : https;
@@ -48,12 +40,14 @@ const streamDownloadFromUrl = (res, fileUrl, fileName) => {
 exports.createShareLink = async (req, res) => {
   try {
     const { folderId } = req.params;
-    const days = Number(req.body.days);
+    const days = parseInt(req.body.days, 10);
 
-    const expiresAt = getExpiryFromDays(days);
-    if (!expiresAt) {
-      return res.redirect(`/dashboard?shareError=Invalid+duration`);
+    if (Number.isNaN(days) || days <= 0 || days > 365) {
+      return res.redirect("/folders?error=Invalid+expiry");
     }
+
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + days);
 
     const folder = await prisma.folder.findFirst({
       where: {
@@ -70,7 +64,7 @@ exports.createShareLink = async (req, res) => {
     const shareLink = await prisma.shareLink.create({
       data: {
         folderId: folder.id,
-        expiresAt,
+        expiresAt: expiryDate,
       },
     });
 
@@ -80,8 +74,8 @@ exports.createShareLink = async (req, res) => {
       `/dashboard?shareSuccess=Link+created&shareLink=${encodeURIComponent(absoluteShareUrl)}`
     );
   } catch (err) {
-    console.error(err);
-    return res.redirect("/dashboard?shareError=Unable+to+create+share+link");
+    console.error("SHARE ERROR:", err);
+    return res.redirect("/folders?error=Unable+to+create+share+link");
   }
 };
 

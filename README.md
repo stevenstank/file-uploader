@@ -88,7 +88,7 @@ npm start
 - Build command:
 
 ```bash
-npm install
+npm install && npx prisma migrate deploy && npx prisma generate
 ```
 
 - Start command:
@@ -97,7 +97,7 @@ npm install
 npm start
 ```
 
-`postinstall` runs `prisma generate` automatically.
+This ensures migrations are applied and Prisma Client is generated for the deployed schema.
 
 ### 3. Set Environment Variables in Render
 
